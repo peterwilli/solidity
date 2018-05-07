@@ -2,6 +2,7 @@
 
 
 Breaking Changes:
+ * ABI Encoder: Properly pad data from calldata (``msg.data`` and external function parameters). Use ``abi.encodePacked`` for unpadded encoding.
  * Disallow conversions between bytesX and uintY of different size.
  * Commandline interface: Require ``-`` if standard input is used as source.
  * General: ``continue`` in a ``do...while`` loop jumps to the condition (it used to jump to the loop body). Warning: this may silently change the semantics of existing code.
