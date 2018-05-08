@@ -6,6 +6,7 @@ Breaking Changes:
  * Commandline interface: Require ``-`` if standard input is used as source.
  * General: ``continue`` in a ``do...while`` loop jumps to the condition (it used to jump to the loop body). Warning: this may silently change the semantics of existing code.
  * Type Checker: Disallow arithmetic operations for Boolean variables.
+ * Remove ``constant`` as function state mutability modifer.
 
 Features:
 
