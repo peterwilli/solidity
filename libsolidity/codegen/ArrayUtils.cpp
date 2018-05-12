@@ -886,8 +886,7 @@ void ArrayUtils::popStorageArrayElement(ArrayType const& _type) const
 		m_context << Instruction::POP;
 	}
 	else
-	{		
-
+	{
 		// stack: ArrayReference
 		retrieveLength(_type);
 		// stack: ArrayReference oldLength
@@ -896,7 +895,6 @@ void ArrayUtils::popStorageArrayElement(ArrayType const& _type) const
 		m_context << Instruction::ISZERO;
 		m_context.appendConditionalInvalid();
 
-
 		// Stack: ArrayReference oldLength
 		m_context << u256(1) << Instruction::SWAP1 << Instruction::SUB;
 		// Stack ArrayReference newLength
@@ -904,7 +902,7 @@ void ArrayUtils::popStorageArrayElement(ArrayType const& _type) const
 		// Stack ArrayReference newLength ArrayReference newLength;
 		accessIndex(_type, false);
 		// Stack: ArrayReference newLength storage_slot byte_offset
-		StorageItem(m_context, _type).setToZero(SourceLocation(), true);
+		StorageItem(m_context, *_type.baseType()).setToZero(SourceLocation(), true);
 		// Stack: ArrayReference newLength
 		m_context << Instruction::SWAP1 << Instruction::SSTORE;
 	}
