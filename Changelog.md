@@ -1,5 +1,7 @@
 ### 0.5.0 (unreleased)
 
+Language Features:
+ * General: Support ``pop()`` for storage arrays.
 
 
 ### 0.4.24 (2018-05-16)
