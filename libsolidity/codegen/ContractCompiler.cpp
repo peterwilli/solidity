@@ -772,33 +772,19 @@ bool ContractCompiler::visit(Break const& _breakStatement)
 	return visitBreakContinue(&_breakStatement);
 }
 
-unsigned ContractCompiler::loopVariablesSize()
-{
-	solAssert(!m_loops.empty(), "");
-	unsigned sizeOnStack = 0;
-	for (auto _decl : m_loopScopedVariables[m_loops.back()])
-		sizeOnStack += _decl->type()->sizeOnStack();
-	return sizeOnStack;
-}
-
 bool ContractCompiler::visitBreakContinue(Statement const* _statement)
 {
 	CompilerContext::LocationSetter locationSetter(m_context, *_statement);
-	unsigned sizeOnStack = loopVariablesSize();
-	// The context stack needs to be adjusted because the following
-	// pops are extra in the sense that they don't come from a normal
-	// block endVisit.
-	m_context.adjustStackOffset(sizeOnStack);
-	CompilerUtils(m_context).popStackSlots(sizeOnStack);
+	unsigned sizeOnStack = stackSizeOfCurrentLoopVariables();
 	if (dynamic_cast<Break const*>(_statement))
 	{
 		solAssert(!m_breakTags.empty(), "");
-		m_context.appendJumpTo(m_breakTags.back());
+		popAndJump(sizeOnStack, m_breakTags.back());
 	}
 	else if (dynamic_cast<Continue const*>(_statement))
 	{
 		solAssert(!m_continueTags.empty(), "");
-		m_context.appendJumpTo(m_continueTags.back());
+		popAndJump(sizeOnStack, m_continueTags.back());
 	}
 	else
 		solAssert(false, "");
@@ -828,14 +814,7 @@ bool ContractCompiler::visit(Return const& _return)
 			CompilerUtils(m_context).moveToStackVariable(*retVariable);
 	}
 
-	unsigned sizeOnStack = 0;
-	for (auto _varDecl : m_scopedVariables)
-		for (auto _decl : _varDecl.second)
-			sizeOnStack += _decl->type()->sizeOnStack();
-
-	CompilerUtils(m_context).popStackSlots(sizeOnStack);
-	m_context.appendJumpTo(m_returnTags.back());
-	m_context.adjustStackOffset(sizeOnStack);
+	popAndJump(stackSizeOfCurrentLocalVariables(), m_returnTags.back());
 	return false;
 }
 
@@ -862,7 +841,7 @@ bool ContractCompiler::visit(VariableDeclarationStatement const& _variableDeclar
 
 	// Local variable slots are reserved when their declaration is seen,
 	// and freed in the end of their scope.
-	for (auto _decl : _variableDeclarationStatement.declarations())
+	for (auto _decl: _variableDeclarationStatement.declarations())
 		addScopedVariable(*_decl);
 
 	StackHeightChecker checker(m_context);
@@ -1047,7 +1026,7 @@ void ContractCompiler::addScopedVariable(VariableDeclaration const& _decl)
 
 void ContractCompiler::popBlockScopedVariables(ASTNode const* _node)
 {
-	for (auto _decl : m_scopedVariables[_node])
+	for (auto _decl: m_scopedVariables[_node])
 	{
 		if (!m_loops.empty())
 			m_loopScopedVariables[m_loops.back()].erase(_decl);
@@ -1062,4 +1041,29 @@ void ContractCompiler::endVisitLoop(BreakableStatement const* _loop)
 {
 	solAssert(!m_loops.empty() && m_loops.back() == _loop, "");
 	m_loops.pop_back();
+}
+
+unsigned ContractCompiler::stackSizeOfCurrentLoopVariables()
+{
+	solAssert(!m_loops.empty(), "");
+	unsigned sizeOnStack = 0;
+	for (auto _decl: m_loopScopedVariables[m_loops.back()])
+		sizeOnStack += _decl->type()->sizeOnStack();
+	return sizeOnStack;
+}
+
+unsigned ContractCompiler::stackSizeOfCurrentLocalVariables()
+{
+	unsigned sizeOnStack = 0;
+	for (auto _varDecl: m_scopedVariables)
+		for (auto _decl: _varDecl.second)
+			sizeOnStack += _decl->type()->sizeOnStack();
+	return sizeOnStack;
+}
+
+void ContractCompiler::popAndJump(unsigned _amount, eth::AssemblyItem const& _jumpTo)
+{
+	CompilerUtils(m_context).popStackSlots(_amount);
+	m_context.appendJumpTo(_jumpTo);
+	m_context.adjustStackOffset(_amount);
 }

@@ -132,7 +132,14 @@ private:
 
 	/// Calculates the amount of stack slots allocated for
 	/// local variables inside the latest loop.
-	unsigned loopVariablesSize();
+	unsigned stackSizeOfCurrentLoopVariables();
+
+	/// Calculates the amount of stack slots allocated for
+	/// local variables currently allocated.
+	unsigned stackSizeOfCurrentLocalVariables();
+
+	/// Pops _amount slots from the stack and jumps to _jumpTo
+	void popAndJump(unsigned _amount, eth::AssemblyItem const& _jumpTo);
 
 	/// Called when a break or continue is visited.
 	/// Counts how many stack slots should be freed and
