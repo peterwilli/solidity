@@ -4709,7 +4709,7 @@ BOOST_AUTO_TEST_CASE(unused_return_value_delegatecall)
 	CHECK_WARNING(text, "Return value of low-level calls not used");
 }
 
-BOOST_AUTO_TEST_CASE(warn_about_callcode)
+BOOST_AUTO_TEST_CASE(callcode_deprecated)
 {
 	char const* text = R"(
 		contract test {
@@ -4719,7 +4719,11 @@ BOOST_AUTO_TEST_CASE(warn_about_callcode)
 		}
 	)";
 	CHECK_WARNING(text, "\"callcode\" has been deprecated in favour of \"delegatecall\"");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(callcode_deprecated_v050)
+{
+	char const* text = R"(
 		pragma experimental "v0.5.0";
 		contract test {
 			function f() pure public {
@@ -4730,7 +4734,7 @@ BOOST_AUTO_TEST_CASE(warn_about_callcode)
 	CHECK_ERROR(text, TypeError, "\"callcode\" has been deprecated in favour of \"delegatecall\"");
 }
 
-BOOST_AUTO_TEST_CASE(no_warn_about_callcode_as_function)
+BOOST_AUTO_TEST_CASE(callcode_not_deprecated_as_function)
 {
 	char const* text = R"(
 		contract test {
