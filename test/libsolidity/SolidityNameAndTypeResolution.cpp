@@ -6744,21 +6744,30 @@ BOOST_AUTO_TEST_CASE(large_storage_array_mapping)
 	CHECK_WARNING(text, "covers a large part of storage and thus makes collisions likely");
 }
 
-BOOST_AUTO_TEST_CASE(library_function_without_implementation)
+BOOST_AUTO_TEST_CASE(library_function_without_implementation_public)
 {
 	char const* text = R"(
 		library L {
+			// This can be used as an "interface", hence it is allowed.
 			function f() public;
 		}
 	)";
 	CHECK_SUCCESS_NO_WARNINGS(text);
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(library_function_without_implementation_internal)
+{
+	char const* text = R"(
 		library L {
 			function f() internal;
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Internal library function must be implemented if declared.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(library_function_without_implementation_private)
+{
+	char const* text = R"(
 		library L {
 			function f() private;
 		}
