@@ -699,16 +699,21 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 		}
 		case FunctionType::Kind::SHA3:
 		{
-			TypePointers argumentTypes;
-			for (auto const& arg: arguments)
-			{
-				arg->accept(*this);
-				argumentTypes.push_back(arg->annotation().type);
-			}
-			utils().fetchFreeMemoryPointer();
+			solAssert(arguments.size() == 1, "");
 			solAssert(!function.padArguments(), "");
-			utils().packedEncode(argumentTypes, TypePointers());
-			utils().toSizeAfterFreeMemoryPointer();
+			TypePointer const& argType = arguments.front()->annotation().type;
+			solAssert(argType, "");
+			if (*argType != ArrayType(DataLocation::Memory))
+			{
+				utils().fetchFreeMemoryPointer();
+				utils().packedEncode({argType}, TypePointers());
+				utils().toSizeAfterFreeMemoryPointer();
+			}
+			else
+			{
+				m_context << Instruction::DUP1;
+				ArrayUtils(m_context).retrieveLength(ArrayType(DataLocation::Memory));
+			}
 			m_context << Instruction::KECCAK256;
 			break;
 		}
