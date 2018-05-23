@@ -1,11 +1,16 @@
 ### 0.5.0 (unreleased)
 
+How to update your code:
+ * Change every ``.call()`` to a ``.call("")`` and every ``.call(signature, a, b ,c)`` to use ``.call(abi.encodeWithSignature(signature, a, b, c))``.
+ * Change every ``keccak256(a, b, c)`` to ``keccak256(abi.encodePacked(a, b, c))``.
+
 
 Breaking Changes:
  * Disallow conversions between bytesX and uintY of different size.
  * Commandline interface: Require ``-`` if standard input is used as source.
  * General: ``continue`` in a ``do...while`` loop jumps to the condition (it used to jump to the loop body). Warning: this may silently change the semantics of existing code.
  * Type Checker: Disallow arithmetic operations for Boolean variables.
+ * Type Checker: Only accept a single ``bytes`` type for ``.call()`` (and family), ``keccak256()``, ``sha256()`` and ``ripemd160()``.
 
 Features:
 
