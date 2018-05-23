@@ -1458,7 +1458,7 @@ BOOST_AUTO_TEST_CASE(multiple_elementary_accessors)
 			function test() {
 				data = 8;
 				name = "Celina";
-				a_hash = keccak256(123);
+				a_hash = keccak256("\x7b");
 				an_address = address(0x1337);
 				super_secret_data = 42;
 			}
@@ -2013,7 +2013,7 @@ BOOST_AUTO_TEST_CASE(keccak256)
 	char const* sourceCode = R"(
 		contract test {
 			function a(bytes32 input) returns (bytes32 hash) {
-				return keccak256(input);
+				return keccak256(abi.encodePacked(input));
 			}
 		}
 	)";
@@ -2033,10 +2033,10 @@ BOOST_AUTO_TEST_CASE(sha3)
 		contract test {
 			// to confuse the optimiser
 			function b(bytes32 input) returns (bytes32) {
-				return sha3(input);
+				return sha3(abi.encodePacked(input));
 			}
 			function a(bytes32 input) returns (bool) {
-				return keccak256(input) == b(input);
+				return keccak256(abi.encodePacked(input)) == b(abi.encodePacked(input));
 			}
 		}
 	)";
@@ -2049,7 +2049,7 @@ BOOST_AUTO_TEST_CASE(sha256)
 	char const* sourceCode = R"(
 		contract test {
 			function a(bytes32 input) returns (bytes32 sha256hash) {
-				return sha256(input);
+				return sha256(abi.encodePacked(input));
 			}
 		}
 	)";
@@ -2074,7 +2074,7 @@ BOOST_AUTO_TEST_CASE(ripemd)
 	char const* sourceCode = R"(
 		contract test {
 			function a(bytes32 input) returns (bytes32 sha256hash) {
-				return ripemd160(input);
+				return ripemd160(bytes.encodePacked(input));
 			}
 		}
 	)";
@@ -2101,7 +2101,7 @@ BOOST_AUTO_TEST_CASE(packed_keccak256)
 			function a(bytes32 input) returns (bytes32 hash) {
 				var b = 65536;
 				uint c = 256;
-				return keccak256(8, input, b, input, c);
+				return keccak256(abi.encodePacked(8, input, b, input, c));
 			}
 		}
 	)";
@@ -2131,9 +2131,9 @@ BOOST_AUTO_TEST_CASE(packed_keccak256_complex_types)
 				x[0] = y[0] = uint120(-2);
 				x[1] = y[1] = uint120(-3);
 				x[2] = y[2] = uint120(-4);
-				hash1 = keccak256(x);
-				hash2 = keccak256(y);
-				hash3 = keccak256(this.f);
+				hash1 = keccak256(abi.encodePacked(x));
+				hash2 = keccak256(abi.encodePacked(y));
+				hash3 = keccak256(abi.encodePacked(this.f));
 			}
 		}
 	)";
@@ -3606,7 +3606,7 @@ BOOST_AUTO_TEST_CASE(sha256_empty)
 	char const* sourceCode = R"(
 		contract C {
 			function f() returns (bytes32) {
-				return sha256();
+				return sha256("");
 			}
 		}
 	)";
@@ -3619,7 +3619,7 @@ BOOST_AUTO_TEST_CASE(ripemd160_empty)
 	char const* sourceCode = R"(
 		contract C {
 			function f() returns (bytes20) {
-				return ripemd160();
+				return ripemd160("");
 			}
 		}
 	)";
@@ -3632,7 +3632,7 @@ BOOST_AUTO_TEST_CASE(keccak256_empty)
 	char const* sourceCode = R"(
 		contract C {
 			function f() returns (bytes32) {
-				return keccak256();
+				return keccak256("");
 			}
 		}
 	)";
@@ -3646,7 +3646,7 @@ BOOST_AUTO_TEST_CASE(keccak256_multiple_arguments)
 		contract c {
 			function foo(uint a, uint b, uint c) returns (bytes32 d)
 			{
-				d = keccak256(a, b, c);
+				d = keccak256(abi.encodePacked(a, b, c));
 			}
 		}
 	)";
@@ -3667,7 +3667,7 @@ BOOST_AUTO_TEST_CASE(keccak256_multiple_arguments_with_numeric_literals)
 		contract c {
 			function foo(uint a, uint16 b) returns (bytes32 d)
 			{
-				d = keccak256(a, b, 145);
+				d = keccak256(abi.encodePacked(a, b, 145));
 			}
 		}
 	)";
@@ -3692,7 +3692,7 @@ BOOST_AUTO_TEST_CASE(keccak256_multiple_arguments_with_string_literals)
 			}
 			function bar(uint a, uint16 b) returns (bytes32 d)
 			{
-				d = keccak256(a, b, 145, "foo");
+				d = keccak256(abi.encodePacked(a, b, 145, "foo"));
 			}
 		}
 	)";
@@ -3731,7 +3731,7 @@ BOOST_AUTO_TEST_CASE(keccak256_with_bytes)
 
 BOOST_AUTO_TEST_CASE(iterated_keccak256_with_bytes)
 {
-	char const* sourceCode = R"(
+	char const* sourceCode = R"ABC(
 		contract c {
 			bytes data;
 			function foo() returns (bytes32)
@@ -3740,10 +3740,10 @@ BOOST_AUTO_TEST_CASE(iterated_keccak256_with_bytes)
 				data[0] = "x";
 				data[1] = "y";
 				data[2] = "z";
-				return keccak256("b", keccak256(data), "a");
+				return keccak256(abi.encodePacked("b", keccak256(data), "a"));
 			}
 		}
-	)";
+	)ABC";
 	compileAndRun(sourceCode);
 	ABI_CHECK(callContractFunction("foo()"), encodeArgs(
 		u256(dev::keccak256(bytes{'b'} + dev::keccak256("xyz").asBytes() + bytes{'a'}))
@@ -3756,7 +3756,7 @@ BOOST_AUTO_TEST_CASE(sha3_multiple_arguments)
 		contract c {
 			function foo(uint a, uint b, uint c) returns (bytes32 d)
 			{
-				d = sha3(a, b, c);
+				d = sha3(abi.encodePacked(a, b, c));
 			}
 		})";
 	compileAndRun(sourceCode);
@@ -3782,7 +3782,7 @@ BOOST_AUTO_TEST_CASE(generic_call)
 				function doSend(address rec) returns (uint d)
 				{
 					bytes4 signature = bytes4(bytes32(keccak256("receive(uint256)")));
-					rec.call.value(2)(signature, 23);
+					rec.call.value(2)(abi.encodeWithSignature(signature, 23));
 					return receiver(rec).received();
 				}
 			}
@@ -3807,7 +3807,7 @@ BOOST_AUTO_TEST_CASE(generic_callcode)
 				function doSend(address rec) returns (uint d)
 				{
 					bytes4 signature = bytes4(bytes32(keccak256("receive(uint256)")));
-					rec.callcode.value(2)(signature, 23);
+					rec.callcode.value(2)(abi.encodeWithSignature(signature, 23));
 					return Receiver(rec).received();
 				}
 			}
@@ -3844,7 +3844,7 @@ BOOST_AUTO_TEST_CASE(generic_delegatecall)
 				function doSend(address rec) payable
 				{
 					bytes4 signature = bytes4(bytes32(keccak256("receive(uint256)")));
-					if (rec.delegatecall(signature, 23)) {}
+					if (rec.delegatecall(abi.encodeWithSignature(signature, 23))) {}
 				}
 			}
 	)**";
@@ -3941,7 +3941,7 @@ BOOST_AUTO_TEST_CASE(bytes_from_calldata_to_memory)
 	char const* sourceCode = R"(
 		contract C {
 			function f() returns (bytes32) {
-				return keccak256("abc", msg.data);
+				return keccak256(abi.encodePacked("abc", msg.data));
 			}
 		}
 	)";
@@ -6145,7 +6145,7 @@ BOOST_AUTO_TEST_CASE(reusing_memory)
 			mapping(uint => uint) map;
 			function f(uint x) returns (uint) {
 				map[x] = x;
-				return (new Helper(uint(keccak256(this.g(map[x]))))).flag();
+				return (new Helper(uint(keccak256(abi.encodePacked(this.g(map[x])))))).flag();
 			}
 			function g(uint a) returns (uint)
 			{
@@ -9133,7 +9133,7 @@ BOOST_AUTO_TEST_CASE(mutex)
 				// NOTE: It is very bad practice to write this function this way.
 				// Please refer to the documentation of how to do this properly.
 				if (amount > shares) throw;
-				if (!msg.sender.call.value(amount)()) throw;
+				if (!msg.sender.call.value(amount)("")) throw;
 				shares -= amount;
 				return shares;
 			}
@@ -9141,7 +9141,7 @@ BOOST_AUTO_TEST_CASE(mutex)
 				// NOTE: It is very bad practice to write this function this way.
 				// Please refer to the documentation of how to do this properly.
 				if (amount > shares) throw;
-				if (!msg.sender.call.value(amount)()) throw;
+				if (!msg.sender.call.value(amount)("")) throw;
 				shares -= amount;
 				return shares;
 			}

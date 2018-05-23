@@ -3044,12 +3044,12 @@ BOOST_AUTO_TEST_CASE(non_initialized_references_050)
 	CHECK_ERROR(text, DeclarationError, "Uninitialized storage pointer");
 }
 
-BOOST_AUTO_TEST_CASE(keccak256_with_large_integer_constant)
+BOOST_AUTO_TEST_CASE(abi_encode_with_large_integer_constant)
 {
 	char const* text = R"(
 		contract c
 		{
-			function f() public { keccak256(2**500); }
+			function f() pure public { abi.encode(2**500); }
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Invalid rational number (too large or division by zero).");
@@ -5519,9 +5519,9 @@ BOOST_AUTO_TEST_CASE(address_methods)
 			function f() public {
 				address addr;
 				uint balance = addr.balance;
-				bool callRet = addr.call();
-				bool callcodeRet = addr.callcode();
-				bool delegatecallRet = addr.delegatecall();
+				bool callRet = addr.call("");
+				bool callcodeRet = addr.callcode("");
+				bool delegatecallRet = addr.delegatecall("");
 				bool sendRet = addr.send(1);
 				addr.transfer(1);
 				callRet; callcodeRet; delegatecallRet; sendRet;
