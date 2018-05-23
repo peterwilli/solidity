@@ -6781,37 +6781,65 @@ BOOST_AUTO_TEST_CASE(using_for_with_non_library)
 	CHECK_ERROR(text, TypeError, "Library name expected.");
 }
 
-BOOST_AUTO_TEST_CASE(experimental_pragma)
+BOOST_AUTO_TEST_CASE(experimental_pragma_empty)
 {
 	char const* text = R"(
 		pragma experimental;
 	)";
 	CHECK_ERROR(text, SyntaxError, "Experimental feature name is missing.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(experimental_pragma_unknown_number_literal)
+{
+	char const* text = R"(
 		pragma experimental 123;
 	)";
 	CHECK_ERROR(text, SyntaxError, "Unsupported experimental feature name.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(experimental_pragma_unknown_string_literal)
+{
+	char const* text = R"(
 		pragma experimental unsupportedName;
 	)";
 	CHECK_ERROR(text, SyntaxError, "Unsupported experimental feature name.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(experimental_pragma_unknown_quoted_string_literal)
+{
+	char const* text = R"(
 		pragma experimental "unsupportedName";
 	)";
 	CHECK_ERROR(text, SyntaxError, "Unsupported experimental feature name.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(experimental_pragma_empy_string_literal)
+{
+	char const* text = R"(
 		pragma experimental "";
 	)";
 	CHECK_ERROR(text, SyntaxError, "Empty experimental feature name is invalid.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(experimental_pragma_multiple_same_line)
+{
+	char const* text = R"(
 		pragma experimental unsupportedName unsupportedName;
 	)";
 	CHECK_ERROR(text, SyntaxError, "Stray arguments.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(experimental_pragma_test_warning)
+{
+	char const* text = R"(
 		pragma experimental __test;
 	)";
 	CHECK_WARNING(text, "Experimental features are turned on. Do not use experimental features on live deployments.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(experimental_pragma_duplicate)
+{
+	char const* text = R"(
 		pragma experimental __test;
 		pragma experimental __test;
 	)";
