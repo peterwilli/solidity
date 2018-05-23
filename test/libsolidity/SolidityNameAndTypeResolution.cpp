@@ -6853,7 +6853,7 @@ BOOST_AUTO_TEST_CASE(reject_interface_constructors)
 	CHECK_ERROR(text, TypeError, "Wrong argument count for constructor call: 1 arguments given but expected 0.");
 }
 
-BOOST_AUTO_TEST_CASE(non_external_fallback)
+BOOST_AUTO_TEST_CASE(fallback_marked_external_v050)
 {
 	char const* text = R"(
 		pragma experimental "v0.5.0";
@@ -6862,21 +6862,33 @@ BOOST_AUTO_TEST_CASE(non_external_fallback)
 		}
 	)";
 	CHECK_SUCCESS_NO_WARNINGS(text);
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(fallback_marked_internal_v050)
+{
+	char const* text = R"(
 		pragma experimental "v0.5.0";
 		contract C {
 			function () internal { }
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Fallback function must be defined as \"external\".");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(fallback_marked_private_v050)
+{
+	char const* text = R"(
 		pragma experimental "v0.5.0";
 		contract C {
 			function () private { }
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Fallback function must be defined as \"external\".");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(fallback_marked_public_v050)
+{
+	char const* text = R"(
 		pragma experimental "v0.5.0";
 		contract C {
 			function () public { }
@@ -6885,7 +6897,7 @@ BOOST_AUTO_TEST_CASE(non_external_fallback)
 	CHECK_ERROR(text, TypeError, "Fallback function must be defined as \"external\".");
 }
 
-BOOST_AUTO_TEST_CASE(invalid_literal_in_tuple)
+BOOST_AUTO_TEST_CASE(tuple_invalid_literal_too_large_for_uint)
 {
 	char const* text = R"(
 		contract C {
@@ -6896,7 +6908,11 @@ BOOST_AUTO_TEST_CASE(invalid_literal_in_tuple)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "is not implicitly convertible to expected type");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(tuple_invalid_literal_too_large_unassigned)
+{
+	const char* text = R"(
 		contract C {
 			function f() pure public {
 				uint x;
@@ -6905,7 +6921,11 @@ BOOST_AUTO_TEST_CASE(invalid_literal_in_tuple)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Invalid rational number.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(tuple_invalid_literal_too_large_for_uint_multi)
+{
+	const char* text = R"(
 		contract C {
 			function f() pure public {
 				uint x;
@@ -6914,7 +6934,11 @@ BOOST_AUTO_TEST_CASE(invalid_literal_in_tuple)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Invalid rational number.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(tuple_invalid_literal_too_large_exp)
+{
+	const char* text = R"(
 		contract C {
 			function f() pure public {
 				(2**270, 1);
@@ -6922,7 +6946,11 @@ BOOST_AUTO_TEST_CASE(invalid_literal_in_tuple)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Invalid rational number.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(tuple_invalid_literal_too_large_expression)
+{
+	const char* text = R"(
 		contract C {
 			function f() pure public {
 				((2**270) / 2**100, 1);
@@ -6955,7 +6983,7 @@ BOOST_AUTO_TEST_CASE(address_overload_resolution)
 	CHECK_SUCCESS(text);
 }
 
-BOOST_AUTO_TEST_CASE(array_length_invalid_expression)
+BOOST_AUTO_TEST_CASE(array_length_invalid_expression_negative_bool)
 {
 	char const* text = R"(
 		contract C {
@@ -6963,25 +6991,41 @@ BOOST_AUTO_TEST_CASE(array_length_invalid_expression)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Invalid array length, expected integer literal or constant expression.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(array_length_invalid_expression_int_divides_bool)
+{
+	char const* text = R"(
 		contract C {
 			uint[true/1] ids;
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Invalid array length, expected integer literal or constant expression.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(array_length_invalid_expression_bool_divides_int)
+{
+	char const* text = R"(
 		contract C {
 			uint[1/true] ids;
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Invalid array length, expected integer literal or constant expression.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(array_length_invalid_expression_scientific_literal)
+{
+	char const* text = R"(
 		contract C {
 			uint[1.111111E1111111111111] ids;
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Invalid array length, expected integer literal or constant expression.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(array_length_invalid_expression_division_by_zero)
+{
+	char const* text = R"(
 		contract C {
 			uint[3/0] ids;
 		}
