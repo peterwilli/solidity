@@ -928,10 +928,11 @@ ASTPointer<Statement> Parser::parseStatement()
 	}
 	case Token::Assembly:
 		return parseInlineAssembly(docString);
+	case Token::Emit:
+		statement = parseEmitStatement(docString);
+		break;
 	case Token::Identifier:
-		if (m_scanner->currentLiteral() == "emit")
-			statement = parseEmitStatement(docString);
-		else if (m_insideModifier && m_scanner->currentLiteral() == "_")
+		if (m_insideModifier && m_scanner->currentLiteral() == "_")
 		{
 			statement = ASTNodeFactory(*this).createNode<PlaceholderStatement>(docString);
 			m_scanner->next();
