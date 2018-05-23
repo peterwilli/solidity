@@ -1,5 +1,7 @@
 ### 0.5.0 (unreleased)
 
+Compiler features:
+ * Parser: Introduce emit as a keyword instead of parsing it as identifier.
 
 Breaking Changes:
  * Disallow conversions between bytesX and uintY of different size.
