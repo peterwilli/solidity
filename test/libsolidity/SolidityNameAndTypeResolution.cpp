@@ -6571,7 +6571,7 @@ BOOST_AUTO_TEST_CASE(do_not_crash_on_not_lvalue)
 	}));
 }
 
-BOOST_AUTO_TEST_CASE(builtin_reject_gas)
+BOOST_AUTO_TEST_CASE(builtin_keccak256_reject_gas)
 {
 	char const* text = R"(
 		contract C {
@@ -6581,7 +6581,11 @@ BOOST_AUTO_TEST_CASE(builtin_reject_gas)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Member \"gas\" not found or not visible after argument-dependent lookup");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(builtin_sha256_reject_gas)
+{
+	const char* text = R"(
 		contract C {
 			function f() public {
 				sha256.gas();
@@ -6589,7 +6593,11 @@ BOOST_AUTO_TEST_CASE(builtin_reject_gas)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Member \"gas\" not found or not visible after argument-dependent lookup");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(builtin_ripemd160_reject_gas)
+{
+	const char* text = R"(
 		contract C {
 			function f() public {
 				ripemd160.gas();
@@ -6597,7 +6605,11 @@ BOOST_AUTO_TEST_CASE(builtin_reject_gas)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Member \"gas\" not found or not visible after argument-dependent lookup");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(builtin_ecrecover_reject_gas)
+{
+	const char* text = R"(
 		contract C {
 			function f() public {
 				ecrecover.gas();
@@ -6657,7 +6669,7 @@ BOOST_AUTO_TEST_CASE(gasleft_shadowing)
 	CHECK_WARNING(text, "This declaration shadows a builtin symbol.");
 }
 
-BOOST_AUTO_TEST_CASE(builtin_reject_value)
+BOOST_AUTO_TEST_CASE(builtin_keccak256_reject_value)
 {
 	char const* text = R"(
 		contract C {
@@ -6667,7 +6679,11 @@ BOOST_AUTO_TEST_CASE(builtin_reject_value)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Member \"value\" not found or not visible after argument-dependent lookup");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(builtin_sha256_reject_value)
+{
+	const char* text = R"(
 		contract C {
 			function f() public {
 				sha256.value();
@@ -6675,7 +6691,11 @@ BOOST_AUTO_TEST_CASE(builtin_reject_value)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Member \"value\" not found or not visible after argument-dependent lookup");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(builtin_ripemd160_reject_value)
+{
+	const char* text = R"(
 		contract C {
 			function f() public {
 				ripemd160.value();
@@ -6683,7 +6703,11 @@ BOOST_AUTO_TEST_CASE(builtin_reject_value)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Member \"value\" not found or not visible after argument-dependent lookup");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(builtin_ecrecover_reject_value)
+{
+	const char* text = R"(
 		contract C {
 			function f() public {
 				ecrecover.value();
