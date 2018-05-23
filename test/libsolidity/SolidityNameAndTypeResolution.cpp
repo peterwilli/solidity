@@ -2273,7 +2273,7 @@ BOOST_AUTO_TEST_CASE(assigning_value_to_const_variable)
 	CHECK_ERROR(text, TypeError, "Cannot assign to a constant variable.");
 }
 
-BOOST_AUTO_TEST_CASE(assigning_state_to_const_variable_0_4_x)
+BOOST_AUTO_TEST_CASE(assigning_state_to_const_variable)
 {
 	char const* text = R"(
 		contract C {
@@ -2283,7 +2283,7 @@ BOOST_AUTO_TEST_CASE(assigning_state_to_const_variable_0_4_x)
 	CHECK_WARNING(text, "Initial value for constant variable has to be compile-time constant.");
 }
 
-BOOST_AUTO_TEST_CASE(assigning_state_to_const_variable)
+BOOST_AUTO_TEST_CASE(assigning_state_to_const_variable_050)
 {
 	char const* text = R"(
 		pragma experimental "v0.5.0";
@@ -6662,7 +6662,7 @@ BOOST_AUTO_TEST_CASE(msg_gas_deprecated_v050)
 	CHECK_ERROR(text, TypeError, "\"msg.gas\" has been deprecated in favor of \"gasleft()\"");
 }
 
-BOOST_AUTO_TEST_CASE(gasleft_shadowing)
+BOOST_AUTO_TEST_CASE(gasleft_shadowing_1)
 {
 	char const* text = R"(
 		contract C {
@@ -6671,8 +6671,11 @@ BOOST_AUTO_TEST_CASE(gasleft_shadowing)
 		}
 	)";
 	CHECK_WARNING(text, "This declaration shadows a builtin symbol.");
+}
 
-	text = R"(
+BOOST_AUTO_TEST_CASE(gasleft_shadowing_2)
+{
+	char const* text = R"(
 		contract C {
 			uint gasleft;
 			function f() public { gasleft = 42; }
