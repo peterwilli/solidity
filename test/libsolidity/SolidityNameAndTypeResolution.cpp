@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE(comparison_bitop_precedence)
 	CHECK_SUCCESS(text);
 }
 
-BOOST_AUTO_TEST_CASE(comparison_of_function_types)
+BOOST_AUTO_TEST_CASE(comparison_of_function_types_lt)
 {
 	char const* text = R"(
 		contract C {
@@ -282,7 +282,11 @@ BOOST_AUTO_TEST_CASE(comparison_of_function_types)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Operator < not compatible");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(comparison_of_function_types_gt)
+{
+	char const* text = R"(
 		contract C {
 			function f() public returns (bool ret) {
 				return f < f;
@@ -290,7 +294,11 @@ BOOST_AUTO_TEST_CASE(comparison_of_function_types)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Operator < not compatible");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(comparison_of_function_types_eq)
+{
+	char const* text = R"(
 		contract C {
 			function f() public returns (bool ret) {
 				return f == f;
