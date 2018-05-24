@@ -1529,7 +1529,7 @@ BOOST_AUTO_TEST_CASE(exp_operator_exponent_too_big)
 	CHECK_ERROR(sourceCode, TypeError, "Operator ** not compatible with types int_const 2 and int_const 10000000000");
 }
 
-BOOST_AUTO_TEST_CASE(exp_warn_literal_base)
+BOOST_AUTO_TEST_CASE(exp_warn_literal_base_1)
 {
 	char const* sourceCode = R"(
 		contract test {
@@ -1540,7 +1540,11 @@ BOOST_AUTO_TEST_CASE(exp_warn_literal_base)
 		}
 	)";
 	CHECK_WARNING(sourceCode, "might overflow");
-	sourceCode = R"(
+}
+
+BOOST_AUTO_TEST_CASE(exp_warn_literal_base_2)
+{
+	char const* sourceCode = R"(
 		contract test {
 			function f() pure public returns(uint) {
 				uint8 x = 100;
@@ -1549,7 +1553,11 @@ BOOST_AUTO_TEST_CASE(exp_warn_literal_base)
 		}
 	)";
 	CHECK_SUCCESS(sourceCode);
-	sourceCode = R"(
+}
+
+BOOST_AUTO_TEST_CASE(exp_warn_literal_base_3)
+{
+	char const* sourceCode = R"(
 		contract test {
 			function f() pure public returns(uint) {
 				return 2**80;
@@ -1559,7 +1567,7 @@ BOOST_AUTO_TEST_CASE(exp_warn_literal_base)
 	CHECK_SUCCESS(sourceCode);
 }
 
-BOOST_AUTO_TEST_CASE(shift_warn_literal_base)
+BOOST_AUTO_TEST_CASE(shift_warn_literal_base_1)
 {
 	char const* sourceCode = R"(
 		contract test {
@@ -1570,7 +1578,11 @@ BOOST_AUTO_TEST_CASE(shift_warn_literal_base)
 		}
 	)";
 	CHECK_WARNING(sourceCode, "might overflow");
-	sourceCode = R"(
+}
+
+BOOST_AUTO_TEST_CASE(shift_warn_literal_base_2)
+{
+	const char* sourceCode = R"(
 		contract test {
 			function f() pure public returns(uint) {
 				uint8 x = 100;
@@ -1579,7 +1591,11 @@ BOOST_AUTO_TEST_CASE(shift_warn_literal_base)
 		}
 	)";
 	CHECK_SUCCESS(sourceCode);
-	sourceCode = R"(
+}
+
+BOOST_AUTO_TEST_CASE(shift_warn_literal_base_3)
+{
+	const char* sourceCode = R"(
 		contract test {
 			function f() pure public returns(uint) {
 				return 2 << 80;
@@ -1587,7 +1603,11 @@ BOOST_AUTO_TEST_CASE(shift_warn_literal_base)
 		}
 	)";
 	CHECK_SUCCESS(sourceCode);
-	sourceCode = R"(
+}
+
+BOOST_AUTO_TEST_CASE(shift_warn_literal_base_4)
+{
+	const char* sourceCode = R"(
 		contract test {
 			function f() pure public returns(uint) {
 				 uint8 x = 100;
