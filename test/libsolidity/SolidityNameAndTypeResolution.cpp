@@ -4251,7 +4251,7 @@ BOOST_AUTO_TEST_CASE(leading_zero_rationals_convert)
 	CHECK_SUCCESS(text);
 }
 
-BOOST_AUTO_TEST_CASE(size_capabilities_of_fixed_point_types)
+BOOST_AUTO_TEST_CASE(fixed_type_size_capabilities)
 {
 	char const* text = R"(
 		contract test {
@@ -4269,7 +4269,7 @@ BOOST_AUTO_TEST_CASE(size_capabilities_of_fixed_point_types)
 	CHECK_SUCCESS(text);
 }
 
-BOOST_AUTO_TEST_CASE(zero_handling)
+BOOST_AUTO_TEST_CASE(fixed_type_zero_handling)
 {
 	char const* text = R"(
 		contract test {
@@ -6498,7 +6498,7 @@ BOOST_AUTO_TEST_CASE(modifiers_access_storage_pointer)
 	CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
-BOOST_AUTO_TEST_CASE(function_types_sig)
+BOOST_AUTO_TEST_CASE(function_types_selector_1)
 {
 	char const* text = R"(
 		contract C {
@@ -6508,7 +6508,11 @@ BOOST_AUTO_TEST_CASE(function_types_sig)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Member \"selector\" not found");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(function_types_selector_2)
+{
+	char const* text = R"(
 		contract C {
 			function g() pure internal {
 			}
@@ -6518,7 +6522,11 @@ BOOST_AUTO_TEST_CASE(function_types_sig)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Member \"selector\" not found");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(function_types_selector_3)
+{
+	char const* text = R"(
 		contract C {
 			function f() view returns (bytes4) {
 				function () g;
@@ -6527,7 +6535,11 @@ BOOST_AUTO_TEST_CASE(function_types_sig)
 		}
 	)";
 	CHECK_ERROR(text, TypeError, "Member \"selector\" not found");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(function_types_selector_4)
+{
+	char const* text = R"(
 		contract C {
 			function f() pure external returns (bytes4) {
 				return this.f.selector;
@@ -6535,7 +6547,11 @@ BOOST_AUTO_TEST_CASE(function_types_sig)
 		}
 	)";
 	CHECK_SUCCESS_NO_WARNINGS(text);
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(function_types_selector_5)
+{
+	char const* text = R"(
 		contract C {
 			function h() pure external {
 			}
@@ -6546,7 +6562,11 @@ BOOST_AUTO_TEST_CASE(function_types_sig)
 		}
 	)";
 	CHECK_WARNING(text, "Use of the \"var\" keyword is deprecated.");
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(function_types_selector_6)
+{
+	char const* text = R"(
 		contract C {
 			function h() pure external {
 			}
@@ -6557,7 +6577,11 @@ BOOST_AUTO_TEST_CASE(function_types_sig)
 		}
 	)";
 	CHECK_SUCCESS_NO_WARNINGS(text);
-	text = R"(
+}
+
+BOOST_AUTO_TEST_CASE(function_types_selector_7)
+{
+	char const* text = R"(
 		contract C {
 			function h() pure external {
 			}
