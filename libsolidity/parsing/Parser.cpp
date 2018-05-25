@@ -1052,6 +1052,8 @@ ASTPointer<ForStatement> Parser::parseForStatement(ASTPointer<ASTString> const& 
 
 ASTPointer<EmitStatement> Parser::parseEmitStatement(ASTPointer<ASTString> const& _docString)
 {
+	solAssert(m_scanner->currentToken() == Token::Emit, "Expected emit token.");
+
 	ASTNodeFactory nodeFactory(*this);
 	m_scanner->next();
 	ASTNodeFactory eventCallNodeFactory(*this);
