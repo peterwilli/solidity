@@ -206,8 +206,7 @@ private:
 	Token::Value scanNumber(char _charSeen = 0);
 	std::tuple<Token::Value, unsigned, unsigned> scanIdentifierOrKeyword();
 
-	Token::Value scanString();
-	Token::Value scanHexString();
+	Token::Value scanString(bool asHex);
 	Token::Value scanSingleLineDocComment();
 	Token::Value scanMultiLineDocComment();
 	/// Scans a slash '/' and depending on the characters returns the appropriate token

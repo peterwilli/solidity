@@ -213,6 +213,7 @@ namespace solidity
 	K(FalseLiteral, "false", 0)                                        \
 	T(Number, NULL, 0)                                                 \
 	T(StringLiteral, NULL, 0)                                          \
+	T(HexStringLiteral, NULL, 0)                                          \
 	T(CommentLiteral, NULL, 0)                                         \
 	\
 	/* Identifiers (not keywords or future reserved words). */         \
@@ -348,7 +349,7 @@ public:
 	unsigned int secondNumber() const { return m_secondNumber; }
 	Token::Value token() const { return m_token; }
 	///if tokValue is set to true, then returns the actual token type name, otherwise, returns full type
-	std::string toString(bool const& tokenValue = false) const 
+	std::string toString(bool const& tokenValue = false) const
 	{
 		std::string name = Token::toString(m_token);
 		if (tokenValue || (firstNumber() == 0 && secondNumber() == 0))

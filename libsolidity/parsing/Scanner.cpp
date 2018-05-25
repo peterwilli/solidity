@@ -442,7 +442,7 @@ void Scanner::scanToken()
 			break;
 		case '"':
 		case '\'':
-			token = scanString();
+			token = scanString(false);
 			break;
 		case '<':
 			// < <= << <<=
@@ -608,7 +608,7 @@ void Scanner::scanToken()
 
 					// Special quoted hex string must follow
 					if (m_char == '"' || m_char == '\'')
-						token = scanHexString();
+						token = scanString(/*asHex*/ true);
 					else
 						token = Token::Illegal;
 				}
@@ -681,7 +681,7 @@ bool Scanner::scanEscape()
 	return true;
 }
 
-Token::Value Scanner::scanString()
+Token::Value Scanner::scanString(bool asHex)
 {
 	char const quote = m_char;
 	advance();  // consume quote
@@ -702,25 +702,8 @@ Token::Value Scanner::scanString()
 		return Token::Illegal;
 	literal.complete();
 	advance();  // consume quote
-	return Token::StringLiteral;
-}
-
-Token::Value Scanner::scanHexString()
-{
-	char const quote = m_char;
-	advance();  // consume quote
-	LiteralScope literal(this, LITERAL_TYPE_STRING);
-	while (m_char != quote && !isSourcePastEndOfInput() && !isLineTerminator(m_char))
-	{
-		char c = m_char;
-		if (!scanHexByte(c))
-			return Token::Illegal;
-		addLiteralChar(c);
-	}
-	if (m_char != quote)
-		return Token::Illegal;
-	literal.complete();
-	advance();  // consume quote
+	if(asHex)
+		return Token::HexStringLiteral;
 	return Token::StringLiteral;
 }
 
